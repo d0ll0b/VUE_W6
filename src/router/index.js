@@ -4,7 +4,7 @@ const routes = [
   {
     path: '/',
     name: '前台導覽列',
-    component: () => import('../views/HomeView.vue'),
+    component: () => import('../views/LayoutView.vue'),
     children: [
       {
         path: '',

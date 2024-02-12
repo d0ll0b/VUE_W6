@@ -1,3 +1,3 @@
 <template>
-    <h1>我是首頁</h1>
+    <h1>首頁</h1>
 </template>
