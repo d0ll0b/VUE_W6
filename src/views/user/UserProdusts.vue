@@ -56,6 +56,9 @@
 </template>
 
 <script>
+const apiUrl = import.meta.env.VITE_API
+const apiPath = import.meta.env.VITE_PATH
+
 export default {
   data () {
     return {
@@ -63,7 +66,7 @@ export default {
       product: {},
       carts: {},
       total: '',
-      final_total: '',
+      finalTotal: '',
       isloading: false,
       form: {
         user: {
@@ -79,8 +82,8 @@ export default {
   methods: {
   // 取得所有商品
     get_products () {
-      const api = `${api_url}/api/${api_path}/products`
-      axios.get(api).then((res) => {
+      const api = `${apiUrl}/api/${apiPath}/products`
+      this.axios.get(api).then((res) => {
         const { products } = res.data
         this.products = products
       }).catch((err) => {
@@ -90,8 +93,8 @@ export default {
     // 取得單一商品
     get_product (id) {
       this.islaoding = true
-      const api = `${api_url}/api/${api_path}/product/${id}`
-      axios.get(api).then((res) => {
+      const api = `${apiUrl}/api/${apiPath}/product/${id}`
+      this.axios.get(api).then((res) => {
         const { product } = res.data
         this.product = product
         this.$refs.userProductModal.show_Model()
@@ -108,10 +111,10 @@ export default {
       this.islaoding = true
 
       if (flg === 'new') {
-        api = `${api_url}/api/${api_path}/cart`
+        api = `${apiUrl}/api/${apiPath}/cart`
         http = 'post'
       } else if (flg === 'update') {
-        api = `${api_url}/api/${api_path}/cart/${id}`
+        api = `${apiUrl}/api/${apiPath}/cart/${id}`
         http = 'put'
       }
 
@@ -120,7 +123,7 @@ export default {
         qty
       }
 
-      axios[http](api, { data: cart }).then((res) => {
+      this.axios[http](api, { data: cart }).then((res) => {
         this.get_cart()
         alert(message)
       }).catch((err) => {
@@ -132,15 +135,16 @@ export default {
     },
     get_cart () {
       this.islaoding = true
-      const api = `${api_url}/api/${api_path}/cart`
+      const api = `${apiUrl}/api/${apiPath}/cart`
 
-      axios.get(api).then((res) => {
-        const { carts, total, final_total } = res.data.data
-        this.carts = carts
-        this.total = total
-        this.final_total = final_total
+      this.axios.get(api).then((res) => {
+        console.dir(res)
+        // const { carts, total } = res.data.data
+        // this.carts = carts
+        // this.total = total
+        // this.finalTotal = finalTotal
       }).catch((err) => {
-        alert(err.data.message)
+        alert(err)
       }).finally(() => {
         this.isloading = false
       })
@@ -153,15 +157,15 @@ export default {
 
       if (id === null) {
         result = confirm('是否清空購物車？')
-        api = `${api_url}/api/${api_path}/carts`
+        api = `${apiUrl}/api/${apiPath}/carts`
         message = '購物車已清空 ಥ_ಥ'
       } else {
         result = confirm('是否刪除品項？')
-        api = `${api_url}/api/${api_path}/cart/${id}`
+        api = `${apiUrl}/api/${apiPath}/cart/${id}`
         message = '已從購物車刪除 ಥ_ಥ'
       }
       if (result) {
-        axios.delete(api).then((res) => {
+        this.axios.delete(api).then((res) => {
           this.get_cart()
           alert(message)
         }).catch((err) => {
@@ -172,10 +176,10 @@ export default {
       }
     },
     onSubmit () {
-      const api = `${api_url}/api/${api_path}/order`
+      const api = `${apiUrl}/api/${apiPath}/order`
       this.isloading = true
 
-      axios.post(api, { data: this.form }).then((res) => {
+      this.axios.post(api, { data: this.form }).then((res) => {
         this.get_cart()
         this.$refs.form.resetForm()
         this.form.message = ''
@@ -191,8 +195,8 @@ export default {
     this.get_products()
     this.get_cart()
 
-    var toast = new bootstrap.Toast(this.$refs.toast)
-    toast.show()
+    // var toast = new bootstrap.Toast(this.$refs.toast)
+    // toast.show()
   }
 }
 </script>
