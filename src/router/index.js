@@ -22,6 +22,24 @@ const routes = [
         component: () => import('../views/user/UserCart.vue')
       }
     ]
+  },
+  {
+    path: '/login',
+    component: () => import('../views/LoginView.vue')
+  },
+  {
+    path: '/admin',
+    component: () => import('../views/admin/AdminDashboard.vue'),
+    children: [
+      {
+        path: '/admin/products',
+        component: () => import('../views/admin/AdminProdusts.vue')
+      },
+      {
+        path: '/admin/orders',
+        component: () => import('../views/admin/AdminOrders.vue')
+      }
+    ]
   }
 ]
 

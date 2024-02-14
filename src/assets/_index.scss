@@ -10,9 +10,9 @@ nav{
     padding : 25px;
     font-weight: 600;
     a{
-        color: #212529;
-        &.active{
-            color: teal;
+        color: #495057;
+        &.router-link-exact-active{
+            color: $teal-600;
         }
     }
 }
