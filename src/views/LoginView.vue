@@ -1,5 +1,9 @@
 <template>
-    <div class="d-flex row justify-content-center align-items-center">
+    <div class="d-flex row justify-content-center">
+        <!-- 吐司訊息 -->
+        <message-toast ref="messageToast"></message-toast>
+        <!-- 吐司訊息 -->
+
         <h1 class="h3 mt-5 mb-3 font-weight-normal">
         後台登入
         </h1>
@@ -24,6 +28,8 @@
 </template>
 
 <script>
+import MessageToast from '@/components/MessageToast.vue'
+
 const apiUrl = import.meta.env.VITE_APP_API_URL
 export default {
   data () {
@@ -41,11 +47,20 @@ export default {
       this.axios.post(api, this.user).then((res) => {
         const { token, expired } = res.data
         document.cookie = `hexToken=${token};expires=${new Date(expired)}; path=/`
-        this.$router.push('/admin')
+        this.$router.push('/admin/products')
       }).catch((err) => {
         console.error(err.response.data.message)
       })
+    },
+    toastMsg (message) {
+      this.$refs.messageToast.show_toast(message)
     }
+  },
+  components: {
+    MessageToast
+  },
+  mounted () {
+    alert('尚未登入，請先進行登入~~')
   }
 }
 </script>

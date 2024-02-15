@@ -1,7 +1,7 @@
 <template>
     <div ref="toast" class="toast ms-auto fixed-top bg-info text-white" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="toast-header">
-        <strong class="me-auto">Shopping Basket</strong>
+        <strong class="me-auto">提示訊息</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
       <div class="toast-body text-weight-blod">

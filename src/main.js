@@ -23,6 +23,21 @@ Object.keys(AllRules).forEach(rule => {
   }
 })
 
+defineRule('minMaxLength', (value, [min, max]) => {
+  // The field is empty so it should pass
+  if (!value || !value.length) {
+    return true
+  }
+  const length = value.length
+  if (length < min) {
+    return `This field must be at least ${min} characters`
+  }
+  if (length > max) {
+    return `This field must be less than ${max} characters`
+  }
+  return true
+})
+
 // Activate the locale
 configure({
   generateMessage: localize(zhTW),
@@ -31,21 +46,6 @@ configure({
 
 // 讀取外部的資源
 setLocale('zhTW')
-
-defineRule('minMaxLength', (value, [min, max]) => {
-  // The field is empty so it should pass
-  if (!value || !value.length) {
-    return true
-  }
-  const length = value.length
-  if (length < min) {
-    return `字數必須大於 ${min}`
-  }
-  if (length > max) {
-    return `字數必須小於 ${max}`
-  }
-  return true
-})
 
 const app = createApp(App)
 

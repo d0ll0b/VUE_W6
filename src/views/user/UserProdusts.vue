@@ -1,59 +1,67 @@
 <template>
-    <h1>產品列表</h1>
-    <div class="mt-4">
-        <!-- 產品Modal -->
-        <user-product-modal ref="userProductModal" :product="product" @add_cart="add_cart"></user-product-modal>
-        <!-- 產品Modal -->
+    <h3>產品列表</h3>
+    <VueLoading :active="isLoading" />
+    <div class="container">
+        <div class="mt-4">
+            <!-- 產品Modal -->
+            <user-product-modal ref="userProductModal" :product="product" @add_cart="add_cart"></user-product-modal>
+            <!-- 產品Modal -->
 
-        <!-- 吐司訊息 -->
-        <message-toast ref="messageToast"></message-toast>
-        <!-- 吐司訊息 -->
+            <!-- 吐司訊息 -->
+            <message-toast ref="messageToast"></message-toast>
+            <!-- 吐司訊息 -->
 
-        <table class="table align-middle">
-            <thead>
-                <tr>
-                <th>圖片</th>
-                <th>商品名稱</th>
-                <th>價格</th>
-                <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="item in products" :key="item.id">
-                <td style="width: 200px">
-                    <img :src="item.imageUrl" style="height: 100px; background-size: cover; background-position: center"/>
-                </td>
-                <td>
-                    {{ item.title }}
-                </td>
-                <td>
-                    <div class="h5" v-if="item.origin_price === item.price">{{ item.price }} 元</div>
-                    <div v-else>
-                        <del class="h6">原價 {{ item.origin_price }} 元</del>
-                        <div class="h5">現在只要 {{ item.price }} 元</div>
-                    </div>
-                </td>
-                <td>
-                    <div class="btn-group btn-group-sm">
-                    <button type="button" class="btn btn-outline-secondary" @click="get_product(item.id)">
-                        <!-- <i class="fas fa-spinner fa-pulse" v-if="isloading"></i> -->
-                        查看更多
-                    </button>
-                    <button type="button" class="btn btn-outline-danger" @click="add_cart(item.id,1,'new')">
-                        <!-- <i class="fas fa-spinner fa-pulse" v-if="isloading"></i> -->
-                        加到購物車
-                    </button>
-                    </div>
-                </td>
-                </tr>
-            </tbody>
-        </table>
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                    <th>圖片</th>
+                    <th>商品名稱</th>
+                    <th>價格</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in products" :key="item.id">
+                    <td style="width: 200px">
+                        <img :src="item.imageUrl" style="height: 100px; background-size: cover; background-position: center"/>
+                    </td>
+                    <td>
+                        {{ item.title }}
+                    </td>
+                    <td>
+                        <div class="h5" v-if="item.origin_price === item.price">{{ item.price }} 元</div>
+                        <div v-else>
+                            <del class="h6">原價 {{ item.origin_price }} 元</del>
+                            <div class="h5">現在只要 {{ item.price }} 元</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-secondary" @click="get_product(item.id)">
+                            <i class="fas fa-spinner fa-pulse" v-if="isLoading"></i>
+                            查看更多
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" @click="add_cart(item.id,1,'new')">
+                            <i class="fas fa-spinner fa-pulse" v-if="isLoading"></i>
+                            加到購物車
+                        </button>
+                        </div>
+                    </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <pagination-btn :pagination="pagination"></pagination-btn>
+            <!-- Pagination -->
+        </div>
     </div>
 </template>
 
 <script>
 import userProductModal from '@/components/userProductModal.vue'
 import MessageToast from '@/components/MessageToast.vue'
+import PaginationBtn from '@/components/PaginationBtn.vue'
 
 const apiUrl = import.meta.env.VITE_APP_API_URL
 const apiPath = import.meta.env.VITE_APP_API_NAME
@@ -63,39 +71,30 @@ export default {
     return {
       products: [],
       product: {},
-      carts: {},
-      total: '',
-      finalTotal: '',
-      isloading: false,
-      form: {
-        user: {
-          name: '',
-          email: '',
-          tel: '',
-          address: ''
-        },
-        message: ''
-      }
+      pagination: {},
+      isLoading: false
     }
   },
   components: {
     userProductModal,
-    MessageToast
+    MessageToast,
+    PaginationBtn
   },
   methods: {
-  // 取得所有商品
-    get_products () {
-      const api = `${apiUrl}/api/${apiPath}/products`
+    // 取得所有商品
+    get_products (page = 1) {
+      const api = `${apiUrl}/api/${apiPath}/products?page=${page}`
       this.axios.get(api).then((res) => {
-        const { products } = res.data
+        const { products, pagination } = res.data
         this.products = products
+        this.pagination = pagination
       }).catch((err) => {
         alert(err)
       })
     },
     // 取得單一商品
     get_product (id) {
-      this.islaoding = true
+      this.isLoading = true
       const api = `${apiUrl}/api/${apiPath}/product/${id}`
       this.axios.get(api).then((res) => {
         const { product } = res.data
@@ -104,20 +103,20 @@ export default {
       }).catch((err) => {
         alert(err)
       }).finally(() => {
-        this.isloading = false
+        this.isLoading = false
       })
     },
     add_cart (id, qty = 1, flg) {
       let api = ''
       let http = ''
       const message = `加入購物車成功，新增${qty}筆商品~~`
-      this.islaoding = true
+      this.isLoading = true
 
       if (flg === 'new') {
         api = `${apiUrl}/api/${apiPath}/cart`
         http = 'post'
-      } else if (flg === 'update') {
-        api = `${apiUrl}/api/${apiPath}/cart/${id}`
+      } else {
+        api = `${apiUrl}/api/${apiPath}/cart/${flg}`
         http = 'put'
       }
 
@@ -127,69 +126,12 @@ export default {
       }
 
       this.axios[http](api, { data: cart }).then((res) => {
-        this.get_cart()
         this.toastMsg(message)
       }).catch((err) => {
         alert(err)
       }).finally(() => {
-        this.isloading = false
+        this.isLoading = false
         this.$refs.userProductModal.hide_Model()
-      })
-    },
-    get_cart () {
-      this.islaoding = true
-      const api = `${apiUrl}/api/${apiPath}/cart`
-
-      this.axios.get(api).then((res) => {
-        const { carts, total, finalTotal } = res.data.data
-        this.carts = carts
-        this.total = total
-        this.finalTotal = finalTotal
-      }).catch((err) => {
-        alert(err)
-      }).finally(() => {
-        this.isloading = false
-      })
-    },
-    delete_cart (id = null) {
-      let api = ''
-      let message = ''
-      let result = ''
-      this.islaoding = true
-
-      if (id === null) {
-        result = confirm('是否清空購物車？')
-        api = `${apiUrl}/api/${apiPath}/carts`
-        message = '購物車已清空 ಥ_ಥ'
-      } else {
-        result = confirm('是否刪除品項？')
-        api = `${apiUrl}/api/${apiPath}/cart/${id}`
-        message = '已從購物車刪除 ಥ_ಥ'
-      }
-      if (result) {
-        this.axios.delete(api).then((res) => {
-          this.get_cart()
-          this.toastMsg(message)
-        }).catch((err) => {
-          alert(err)
-        }).finally(() => {
-          this.isloading = false
-        })
-      }
-    },
-    onSubmit () {
-      const api = `${apiUrl}/api/${apiPath}/order`
-      this.isloading = true
-
-      this.axios.post(api, { data: this.form }).then((res) => {
-        this.get_cart()
-        this.$refs.form.resetForm()
-        this.form.message = ''
-        this.toastMsg('訂單已成交，謝謝~~')
-      }).catch((err) => {
-        alert(err)
-      }).finally(() => {
-        this.isloading = false
       })
     },
     toastMsg (message) {
@@ -198,7 +140,6 @@ export default {
   },
   mounted () {
     this.get_products()
-    this.get_cart()
   }
 }
 </script>

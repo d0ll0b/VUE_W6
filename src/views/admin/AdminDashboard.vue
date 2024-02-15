@@ -4,7 +4,7 @@
         <RouterLink to="/">返回前台</RouterLink> |
         <RouterLink to="/admin/products">產品列表</RouterLink> |
         <RouterLink to="/admin/orders">訂單列表</RouterLink> |
-        <!-- <RouterLink to="/logout">登出</RouterLink> -->
+        <a href="#" @click.prevent="signout">登出</a>
     </nav>
     <RouterView v-if="isLogin"/>
 </template>
@@ -24,8 +24,13 @@ export default {
         this.isLogin = true
       }).catch((err) => {
         console.dir(err)
-        this.$router.back()
+        this.$router.push('/login')
       })
+    },
+    signout () {
+      document.cookie = 'hexToken=;expires='
+      alert('已成功登出~~')
+      this.$router.push('/login')
     }
   },
   mounted () {
