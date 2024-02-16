@@ -23,7 +23,7 @@ export default {
       this.axios.post(api).then((res) => {
         this.isLogin = true
       }).catch((err) => {
-        console.dir(err)
+        alert(err)
         this.$router.push('/login')
       })
     },

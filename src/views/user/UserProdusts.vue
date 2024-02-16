@@ -37,10 +37,12 @@
                     </td>
                     <td>
                         <div class="btn-group btn-group-sm">
-                        <button type="button" class="btn btn-outline-secondary" @click="get_product(item.id)">
-                            <i class="fas fa-spinner fa-pulse" v-if="isLoading"></i>
-                            查看更多
-                        </button>
+                        <!-- <button type="button" class="btn btn-outline-secondary"> -->
+                            <RouterLink  class="btn btn-outline-secondary" :to="`/product/${item.id}`">
+                                <i class="fas fa-spinner fa-pulse" v-if="isLoading"></i>
+                                查看更多
+                            </RouterLink>
+                        <!-- </button> -->
                         <button type="button" class="btn btn-outline-danger" @click="add_cart(item.id,1,'new')">
                             <i class="fas fa-spinner fa-pulse" v-if="isLoading"></i>
                             加到購物車
@@ -83,6 +85,7 @@ export default {
   methods: {
     // 取得所有商品
     get_products (page = 1) {
+      this.isLoading = true
       const api = `${apiUrl}/api/${apiPath}/products?page=${page}`
       this.axios.get(api).then((res) => {
         const { products, pagination } = res.data
@@ -90,6 +93,8 @@ export default {
         this.pagination = pagination
       }).catch((err) => {
         alert(err)
+      }).finally(() => {
+        this.isLoading = false
       })
     },
     // 取得單一商品
